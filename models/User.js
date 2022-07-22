@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           isEmail: true,
         },
@@ -25,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
           len: [3, 10],
         },
       },
-      phoneNumber: DataTypes.STRING,
+      phoneNumber: { type: DataTypes.STRING, unique: true },
       profilePic: DataTypes.STRING,
       coverPhoto: DataTypes.STRING,
     },
@@ -34,16 +35,54 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  //   User.associate = (model) => {
-  //     User.hasMany(model.Post, {
-  //       foreignKey: {
-  //         name: "user_id",
-  //         allowNull: false,
-  //       },
-  //       onDelete: "RESTRICT",
-  //       onUpdate: "RESTRICT",
-  //     });
-  //   };
+  User.associate = (model) => {
+    User.hasMany(model.Post, {
+      foreignKey: {
+        name: "user_id",
+        allowNull: false,
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "RESTRICT",
+    });
+
+    User.hasMany(model.Comment, {
+      foreignKey: {
+        name: "user_id",
+        allowNull: false,
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "RESTRICT",
+    });
+
+    User.hasMany(model.Likes, {
+      foreignKey: {
+        name: "user_id",
+        allowNull: false,
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "RESTRICT",
+    });
+
+    User.hasMany(model.Friend, {
+      as: "requestFrom",
+      foreignKey: {
+        name: "request_from_id",
+        allowNull: false,
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "RESTRICT",
+    });
+
+    User.hasMany(model.Friend, {
+      as: "requestTo",
+      foreignKey: {
+        name: "request_to_id",
+        allowNull: false,
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "RESTRICT",
+    });
+  };
 
   return User;
 };
