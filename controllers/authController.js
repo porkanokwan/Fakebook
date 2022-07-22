@@ -3,6 +3,14 @@ const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const createError = require("../utils/createError");
 const { User } = require("../models");
+const { Op } = require("sequelize");
+
+const genToken = (payload) => {
+  const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+    expiresIn: process.env.JWT_EXPIREIN,
+  });
+  return token;
+};
 
 exports.register = async (req, res, next) => {
   try {
@@ -35,13 +43,7 @@ exports.register = async (req, res, next) => {
       password: hashPassword,
     });
 
-    const payload = {
-      id: user.id,
-    };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d",
-    });
+    const token = genToken({ id: user.id });
 
     res.status(201).json({ token });
   } catch (error) {
@@ -51,7 +53,26 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    return res.send("Login");
+    const { emailOrphone, password } = req.body;
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [{ email: emailOrphone }, { phoneNumber: emailOrphone }],
+      },
+    });
+
+    console.log(user);
+    if (!user) {
+      createError("invalid credential", 400);
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      createError("password incorrect", 400);
+    }
+
+    const token = genToken({ id: user.id });
+    res.status(200).json({ token });
   } catch (error) {
     next(error);
   }

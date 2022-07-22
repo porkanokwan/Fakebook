@@ -4,8 +4,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
-const { sequelize } = require("./models");
-sequelize.sync({ force: true });
+// const { sequelize } = require("./models");
+// sequelize.sync({ force: true });
 
 const authRoute = require("./routes/authRoute");
 const profileRoute = require("./routes/profileRoute");
