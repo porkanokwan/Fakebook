@@ -5,14 +5,19 @@ module.exports = (sequelize, DataTypes) => {
       firstName: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       lastName: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       email: {
         type: DataTypes.STRING,
-        allowNull: false,
         unique: true,
         validate: {
           isEmail: true,
@@ -23,7 +28,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notEmpty: true,
-          len: [3, 10],
+          // len: {
+          //   args: [4, 100],
+          //   msg: "Length must be greater than 4",
+          // },
+          min(value) {
+            if (value.length < 4) {
+              throw new Error("Length must be greater than 4");
+            }
+          },
         },
       },
       phoneNumber: { type: DataTypes.STRING, unique: true },
