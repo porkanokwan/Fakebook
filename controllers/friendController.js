@@ -13,13 +13,13 @@ exports.getAllFriend = async (req, res, next) => {
   try {
     const { status } = req.query;
     let users = [];
-    if (status.toLowerCase() === "unknown") {
+    if (status?.toLowerCase() === "unknown") {
       //**** Find unknown frined
       users = await unknownFriend(req.user.id);
-    } else if (status.toLowerCase() === friend_pending) {
+    } else if (status?.toLowerCase() === friend_pending) {
       //**** Find pending frined (เพื่อนที่ขอมาหาเรา)
       users = await findPendingFriend(req.user.id);
-    } else if (status.toLowerCase() === "request") {
+    } else if (status?.toLowerCase() === "request") {
       //**** Find request to friend (เพื่อนที่เราขอไป)
       users = await requestToFriend(req.user.id);
     } else {
