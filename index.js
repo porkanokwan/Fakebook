@@ -16,6 +16,7 @@ const friendRoute = require("./routes/friendRoute");
 
 const errorMiddleware = require("./middlewares/error");
 const notFoundMiddleware = require("./middlewares/notFound");
+const authenticateMiddleware = require("./middlewares/authenticate");
 
 const app = express();
 
@@ -28,11 +29,11 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/auth", authRoute);
-app.use("/profile", profileRoute);
+app.use("/profile", authenticateMiddleware, profileRoute);
 app.use("/users", userRoute);
 app.use("/posts", postRoute);
 app.use("/comment", commentRoute);
-app.use("/friends", friendRoute);
+app.use("/friends", authenticateMiddleware, friendRoute);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
