@@ -1,4 +1,7 @@
+const cloudinary = require("cloudinary").v2;
 const { findAcceptedFriend } = require("../service/friendService");
+const { User } = require("../models");
+const fs = require("fs/promises");
 
 exports.profile = async (req, res, next) => {
   try {
@@ -13,10 +16,22 @@ exports.profile = async (req, res, next) => {
 
 exports.updateProfile = async (req, res, next) => {
   try {
-    const { id, profilePic, coverPhoto } = req.user;
-    console.log(id);
-    res.status(200).json({ url: { profilePic, coverPhoto } });
+    // console.log(req.file);
+    cloudinary.uploader.upload(req.file.path, async (error, result) => {
+      if (error) {
+        return next(error);
+      }
+
+      await User.update(
+        { profilePic: result.secure_url },
+        { where: { id: req.user.id } }
+      );
+
+      fs.unlink(req.file.path);
+
+      res.status(200).json({ profilePic: result.secure_url });
+    });
   } catch (err) {
-    next();
+    next(err);
   }
 };
