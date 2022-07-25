@@ -30,9 +30,9 @@ if (process.env.NODE_ENV === "development") {
 
 app.use("/auth", authRoute);
 app.use("/profile", authenticateMiddleware, profileRoute);
-app.use("/users", userRoute);
-app.use("/posts", postRoute);
-app.use("/comment", commentRoute);
+app.use("/users", authenticateMiddleware, userRoute);
+app.use("/posts", authenticateMiddleware, postRoute);
+app.use("/comment", authenticateMiddleware, commentRoute);
 app.use("/friends", authenticateMiddleware, friendRoute);
 
 app.use(notFoundMiddleware);
