@@ -84,3 +84,17 @@ exports.requestToFriend = async (id) => {
 
   return friend.map((el) => el.requestTo);
 };
+
+exports.findFriendId = async (id) => {
+  const friends = await Friend.findAll({
+    where: {
+      status: friend_accepted,
+      [Op.or]: [{ request_from_id: id }, { request_to_id: id }],
+    },
+  });
+
+  const friendIds = friends.map((el) =>
+    el.request_to_id === id ? el.request_from_id : el.request_to_id
+  );
+  return friendIds;
+};
