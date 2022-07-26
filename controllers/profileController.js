@@ -15,6 +15,28 @@ exports.profile = async (req, res, next) => {
   }
 };
 
+exports.getProfileById = async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+    const user = await User.findOne({
+      where: { id: user_id },
+      attributes: { exclude: ["password"] },
+    });
+    if (!user) {
+      createError("user not found on this server", 400);
+    }
+
+    const result = JSON.parse(JSON.stringify(user, null, 2));
+    // console.log(result);
+
+    const friends = await findAcceptedFriend(user.id);
+    // console.log(friends);
+    res.json({ user: { ...result, friends } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.updateProfile = async (req, res, next) => {
   try {
     // console.log(req.file);

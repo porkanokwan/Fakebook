@@ -4,6 +4,7 @@ const upload = require("../middlewares/uploadMiddleware");
 const router = express.Router();
 
 router.get("/", profileController.profile);
+router.get("/:user_id", profileController.getProfileById);
 router.patch(
   "/",
   upload.fields([
