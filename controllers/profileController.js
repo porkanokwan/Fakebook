@@ -1,8 +1,9 @@
 const cloudinary = require("../utils/cloudinary");
 const { findAcceptedFriend } = require("../service/friendService");
-const { User } = require("../models");
+const { User, Friend } = require("../models");
 const fs = require("fs");
 const createError = require("../utils/createError");
+const { Op } = require("sequelize");
 
 exports.profile = async (req, res, next) => {
   try {
@@ -31,7 +32,19 @@ exports.getProfileById = async (req, res, next) => {
 
     const friends = await findAcceptedFriend(user.id);
     // console.log(friends);
-    res.json({ user: { ...result, friends } });
+    result.friends = friends;
+
+    // get status ของเพื่อนแต่ละคนว่ามี status เป็นอะไรกับเรา
+    const friend = await Friend.findOne({
+      where: {
+        [Op.or]: [
+          { request_to_id: user_id, request_from_id: req.user.id },
+          { request_to_id: req.user.id, request_from_id: user_id },
+        ],
+      },
+    });
+    result.friendStatus = friend;
+    res.json({ user: result });
   } catch (err) {
     next(err);
   }
