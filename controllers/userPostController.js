@@ -22,12 +22,24 @@ exports.getAllPosts = async (req, res, next) => {
         {
           model: Comment,
           attributes: {
-            exclude: ["password", "coverPhoto", "email", "phoneNumber"],
+            exclude: ["createAt", "user_id"],
+          },
+          include: {
+            model: User,
+            attributes: {
+              exclude: ["password", "coverPhoto", "email", "phoneNumber"],
+            },
           },
         },
         {
           model: Likes,
           attributes: ["createdAt"],
+          include: {
+            model: User,
+            attributes: {
+              exclude: ["password", "coverPhoto", "email", "phoneNumber"],
+            },
+          },
         },
       ],
     });
