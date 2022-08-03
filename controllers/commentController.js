@@ -51,8 +51,10 @@ exports.updateComment = async (req, res, next) => {
 
 exports.deleteComment = async (req, res, next) => {
   try {
-    const { comment_id } = req.params;
-    const comment = await Comment.findOne({ where: { id: comment_id } });
+    const { post_id, comment_id } = req.params;
+    const comment = await Comment.findOne({
+      where: { id: comment_id, post_id },
+    });
     if (!comment) {
       createError("comment not found", 400);
     }
@@ -60,7 +62,7 @@ exports.deleteComment = async (req, res, next) => {
       createError("You are have no permission", 403);
     }
 
-    await Comment.destroy({ where: { id: comment_id } });
+    await comment.destroy();
     // เขียน destroy ได้อีกแบบคือ
     // await comment.destroy()
 
