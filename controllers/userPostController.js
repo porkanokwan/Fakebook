@@ -33,7 +33,9 @@ exports.getAllPosts = async (req, res, next) => {
         },
         {
           model: Likes,
-          attributes: ["createdAt"],
+          attributes: {
+            exclude: ["createAt"],
+          },
           include: {
             model: User,
             attributes: {
