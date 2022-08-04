@@ -71,7 +71,16 @@ exports.updatePost = async (req, res, next) => {
       { where: { id: post_id } }
     );
 
-    const updatePost = await Post.findOne({ where: { id: post_id } });
+    const updatePost = await Post.findOne({
+      where: { id: post_id },
+      attributes: { exclude: ["user_id"] },
+      include: {
+        model: User,
+        attributes: {
+          exclude: ["password", "email", "phoneNumber", "coverPhoto"],
+        },
+      },
+    });
     res.json({ post: updatePost });
   } catch (err) {
     next(err);

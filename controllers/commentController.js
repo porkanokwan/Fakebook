@@ -1,5 +1,5 @@
 const createError = require("../utils/createError");
-const { Comment, Post } = require("../models");
+const { Comment, Post, User } = require("../models");
 
 exports.createComment = async (req, res, next) => {
   try {
@@ -42,7 +42,16 @@ exports.updateComment = async (req, res, next) => {
     }
 
     await Comment.update({ title }, { where: { id: comment_id } });
-    const comments = await Comment.findOne({ where: { id: comment_id } });
+    const comments = await Comment.findOne({
+      where: { id: comment_id },
+      attributes: { exclude: ["user_id"] },
+      include: {
+        model: User,
+        attributes: {
+          exclude: ["password", "email", "phoneNumber", "coverPhoto"],
+        },
+      },
+    });
     res.json({ comments });
   } catch (err) {
     next(err);
