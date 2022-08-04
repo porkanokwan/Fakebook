@@ -50,17 +50,29 @@ exports.unknownFriend = async (id) => {
       [Op.or]: [{ request_from_id: id }, { request_to_id: id }],
     },
   });
-  console.log(JSON.stringify(friend, null, 2));
-
   const friendIds = friend.map((el) => {
     return el.request_from_id === id ? el.request_to_id : el.request_from_id;
   });
+  console.log(JSON.stringify(friend, null, 2));
 
   friendIds.push(id);
 
+  const friendRequest = await Friend.findAll({
+    where: {
+      status: friend_pending,
+      [Op.or]: [{ request_from_id: id }, { request_to_id: id }],
+    },
+  });
+
+  const friendRequestIds = friendRequest.map((el) => {
+    return el.request_from_id === id ? el.request_to_id : el.request_from_id;
+  });
+
+  const allIds = friendIds.concat(friendRequestIds);
+
   const users = await User.findAll({
     // ไม่เอา id ตัวเอง และอันที่เป็นเพื่อนกับเรา
-    where: { id: { [Op.notIn]: friendIds } },
+    where: { id: { [Op.notIn]: allIds } },
     attributes: { exclude: ["password"] },
   });
 
